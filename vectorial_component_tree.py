@@ -55,3 +55,4 @@ class ComponentTreeFunction(Function):
       grad_in = tc.zeros((tree.num_leaves(),), dtype=grad_output.dtype)
       grad_in[indices] = grad_output[leaf_parents[indices]]
     return None, hg.delinearize_vertex_weights(grad_in, graph), None
+  

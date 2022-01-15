@@ -27,14 +27,14 @@ def attribute_saddle_nodes(tree, attribute):
   return saddle_nodes, base_nodes
 
 
-def loss_maxima(max_tree, graph, image, saliency_measure, importance_measure, num_target_maxima, margin=1, p=1):
+def loss_maxima(comp_tree, graph, image, saliency_measure, importance_measure, num_target_maxima, margin=1, p=1):
   if not saliency_measure in ["altitude", "dynamics"]:
     raise ValueError("Saliency_measure can be either 'altitude' or 'dynamics'")
 
   if not importance_measure in ["altitude", "dynamics", "area", "volume"]:
     raise ValueError("Importance_measure can be either 'altitude', 'dynamics', 'area', or 'volume'")
   
-  tree, altitudes = max_tree(graph, image)
+  tree, altitudes = comp_tree(graph, image)
   altitudes_np = altitudes.detach().numpy()
 
   extrema = hg.attribute_extrema(tree, altitudes_np)

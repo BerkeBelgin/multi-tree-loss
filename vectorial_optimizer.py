@@ -1,14 +1,17 @@
 import torch as tc
-# import matplotlib.pyplot as plt
+import higra as hg
+
+from vectorial_component_tree import ComponentTree
 
 class Optimizer:
-  def __init__(self, loss, lr, optimizer="adam"):
-    self.loss_function = loss
-    self.history = []
-    self.optimizer = optimizer
+  def __init__(self, tree_type, loss_func, lr, optimizer="adam"):
+    self.comp_tree = ComponentTree(tree_type)
+    self.loss_func = loss_func
     self.lr = lr
+    self.optimizer = optimizer
     self.best = None
     self.best_loss = float("inf")
+    self.history = []
 
   def fit(self, data, iter=1000, debug=False, min_lr=1e-6):
     data = data.clone().requires_grad_(True)
@@ -20,10 +23,12 @@ class Optimizer:
 
     if min_lr:
       lr_scheduler = tc.optim.lr_scheduler.ReduceLROnPlateau(optimizer,patience=100)
-
+    
+    graph = hg.get_8_adjacency_implicit_graph(tuple(data.size()))
+    
     for t in range(iter):
       optimizer.zero_grad()
-      loss = self.loss_function(tc.relu(data))
+      loss = self.loss_func(self.comp_tree, graph, tc.relu(data))
       loss.backward()
       optimizer.step()  
       loss_value = loss.item()
@@ -41,7 +46,3 @@ class Optimizer:
       if debug and t % debug == 0:
         print("Iteration {}: Loss: {:.4f}, LR: {}".format(t, loss_value, optimizer.param_groups[0]['lr']))
     return self.best
-
-  # def show_history(self):
-    # plt.plot(self.history)
-    # plt.show()
