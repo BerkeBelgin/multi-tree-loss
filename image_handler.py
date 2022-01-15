@@ -37,6 +37,29 @@ def gen_multi_max(noise):
   return im
 
 
+def sp_noise(image, prob, wb=True):
+    image = np.copy(image)
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+          if(len(image.shape) > 2):
+            if(wb):
+              rdn_lst = np.repeat(np.random.rand(), image.shape[2])
+            else:
+              rdn_lst = [np.random.rand() for n in range(image.shape[2])]
+            for k in range(image.shape[2]):
+              if rdn_lst[k] <= prob / 2:
+                  image[i,j,k] = 0
+              elif rdn_lst[k] <= prob:
+                  image[i,j,k] = 1
+          else:
+            rdn = np.random.rand()
+            if rdn <= prob / 2:
+                image[i,j] = 0
+            elif rdn <= prob:
+                image[i,j] = 1
+    return image
+
+
 def noise_image(image, noise_typ):
     if noise_typ == "gauss":
       row,col,ch= image.shape
@@ -160,9 +183,6 @@ def to_multi_channel(image, channel_num, bit_range=8):
 
 def mse(image_a, image_b):
   return np.square(image_a - image_b).mean(axis=None)
-
-def psnr(image_a, image_b, value_range):
-  return 10 * math.log10((value_range - 1)**2/mse(image_a, image_b))
 
 # def prepare_plot(testimage_len):
 #   figsize = 4
