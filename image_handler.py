@@ -128,14 +128,10 @@ def show_image(image):
   if(len(image.shape) == 2 or image.shape[2] == 1):
     imshow(image, cmap="gray")
   else:
-    if(image.shape[2] == 3):
-      imshow(image, cmap="gray")
     for i in range(image.shape[2]):
       imshow(image[:,:,i], cmap="gray")
-
-def sc_show_image(image, sc_image):
-  imshow(image, cmap="gray")
-  imshow(sc_image, cmap="gray")
+    if(image.shape[2] == 3):
+      imshow(image, cmap="gray")
 
 
 def __num_to_binary_list(number, bit_range):
